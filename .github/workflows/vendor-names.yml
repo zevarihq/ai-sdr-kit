@@ -1,0 +1,20 @@
+name: vendor-names
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: No backend vendor names
+        env:
+          # Same list as Zevari's provider-leakage check. Zevari never names the vendors behind it.
+          PATTERN: 'unipile|\bwiza\b|\brailway\b|pg-?boss|\bneon\b|drizzle|moltsets?|full ?enrich|serper|\bjina\b|calljmp|lead ?panther|openrouter|deepinfra|deepseek|\binception\b|\bmercury-[23]\b|workers[ -]ai|trigger\.dev'
+        run: |
+          if grep -rnIiP "$PATTERN" --exclude-dir=.git --exclude=vendor-names.yml .; then
+            echo "Remove the vendor names above. Zevari never names the services behind it."
+            exit 1
+          fi
