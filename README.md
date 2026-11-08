@@ -29,6 +29,7 @@ Those are closed apps: you work inside their dashboard, with their AI. The AI SD
 |---|---|
 | Claude Code | `/plugin marketplace add zevarihq/ai-sdr-kit`, then `/plugin install ai-sdr-kit@ai-sdr-kit` |
 | Codex | `codex plugin marketplace add zevarihq/ai-sdr-kit`, then `codex plugin add ai-sdr-kit@ai-sdr-kit` |
+| Any agent that reads skills | `npx skills add zevarihq/ai-sdr-kit`, then connect it to Zevari (rows below) |
 | OpenClaw | [Connect OpenClaw to Zevari](https://docs.zevari.ai/api/connect/openclaw?utm_source=github-kit), then give it [the SOP](https://zevari.ai/guides/agentify-outbound-sop.md) |
 | Hermes Agent | [Connect Hermes to Zevari](https://docs.zevari.ai/api/connect/hermes-agent?utm_source=github-kit), then give it [the SOP](https://zevari.ai/guides/agentify-outbound-sop.md) |
 | Grok bot or any other agent | [Bring your own agent](https://docs.zevari.ai/api/connect/bring-your-own-agent?utm_source=github-kit) with a Zevari access token, then give it [the SOP](https://zevari.ai/guides/agentify-outbound-sop.md) |
