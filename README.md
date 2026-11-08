@@ -1,5 +1,7 @@
 # AI SDR Kit: the open-source AI SDR harness
 
+**The open alternative to HeyReach, Apollo and Gojiberry, designed for AI agents.**
+
 **Give your AI agent a full outbound playbook for LinkedIn and email.** Works with OpenClaw, Hermes Agent, a Grok bot, Claude Code, Codex and any agent that speaks MCP. Your agent writes with its own model. [Zevari](https://zevari.ai/?utm_source=github-kit) does the sending.
 
 MIT licensed. Free to fork.
@@ -17,12 +19,16 @@ It's the harness that turns a persistent AI agent into an AI SDR (sales developm
 
 Plus an MCP config that connects your agent to Zevari at `https://mcp.zevari.ai/mcp`.
 
+## How is it different from HeyReach, Apollo or Gojiberry?
+
+Those are closed apps: you work inside their dashboard, with their AI. The AI SDR Kit is open. The agent you already run (OpenClaw, Hermes, a Grok bot, Claude Code or Codex) follows the playbook, writes every message with its own model and asks you before anything sends. You can read, fork and change every step. [Zevari](https://zevari.ai/?utm_source=github-kit) does the LinkedIn and email sending, with approvals and account safety limits built in.
+
 ## Which agents does it work with?
 
 | Agent | How to install |
 |---|---|
-| Claude Code | `/plugin marketplace add zevari-ai/ai-sdr-kit`, then `/plugin install ai-sdr-kit@ai-sdr-kit` |
-| Codex | `codex plugin marketplace add zevari-ai/ai-sdr-kit`, then `codex plugin install ai-sdr-kit@ai-sdr-kit` |
+| Claude Code | `/plugin marketplace add zevarihq/ai-sdr-kit`, then `/plugin install ai-sdr-kit@ai-sdr-kit` |
+| Codex | `codex plugin marketplace add zevarihq/ai-sdr-kit`, then `codex plugin install ai-sdr-kit@ai-sdr-kit` |
 | OpenClaw | [Connect OpenClaw to Zevari](https://docs.zevari.ai/api/connect/openclaw?utm_source=github-kit), then give it [the SOP](https://zevari.ai/guides/agentify-outbound-sop.md) |
 | Hermes Agent | [Connect Hermes to Zevari](https://docs.zevari.ai/api/connect/hermes-agent?utm_source=github-kit), then give it [the SOP](https://zevari.ai/guides/agentify-outbound-sop.md) |
 | Grok bot or any other agent | [Bring your own agent](https://docs.zevari.ai/api/connect/bring-your-own-agent?utm_source=github-kit) with a Zevari access token, then give it [the SOP](https://zevari.ai/guides/agentify-outbound-sop.md) |

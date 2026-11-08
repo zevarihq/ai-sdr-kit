@@ -170,6 +170,7 @@ Then test, read-only:
    2. Drafts they edited and actually sent.
    3. Their best LinkedIn posts.
    Aim for about 15 samples.
+   Little real writing of their own? Offer a ready-made style. Call `skills_list` with `category: "voice"`. Each description says what the style is, who it's for, who inspired it and gives an example. Show them the 3 that best fit their ICP and let them pick. Apply it to one campaign: `voice_profiles_init` with `scope: "campaign"` and the `campaign_id`, then `voice_profiles_patch` on that scope with the returned `revision`, filling `writing_style` (`voice_summary`, `tone`, `sentence_patterns`, `formatting_rules`, `preferred_vocabulary`, `avoided_vocabulary`, `distinctive_phrases`) from the style's instructions (`skills_get`). Their own writing replaces it once they have enough.
 3. **Do not train on:** warm-up emails, AI drafts they didn't edit, templates, anything that got zero replies, other people's writing.
 4. Write `VOICE.md`: how they open, how long their messages are, words they use, words they never use, sign-off, punctuation habits, tone. Add a short **Never say** list and a **Signature lines** list.
 5. Mirror it into Zevari: save samples with `voice_dna_save`, and update Voice Writer's Never say, Not your voice and Signature lines with `voice_profiles_patch`. Show the person the diff first.

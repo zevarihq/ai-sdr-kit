@@ -6,8 +6,8 @@
     "name": "Zevari",
     "url": "https://zevari.ai/?utm_source=github-kit"
   },
-  "homepage": "https://github.com/zevari-ai/ai-sdr-kit",
-  "repository": "https://github.com/zevari-ai/ai-sdr-kit",
+  "homepage": "https://github.com/zevarihq/ai-sdr-kit",
+  "repository": "https://github.com/zevarihq/ai-sdr-kit",
   "license": "MIT",
   "keywords": [
     "ai-sdr",

@@ -13,8 +13,8 @@
     "capabilities": ["Outbound setup", "ICP scoring", "Lead routing", "LinkedIn sequences", "Email sequences", "Campaign building", "Daily brief"]
   },
   "license": "MIT",
-  "repository": "https://github.com/zevari-ai/ai-sdr-kit",
-  "homepage": "https://github.com/zevari-ai/ai-sdr-kit",
+  "repository": "https://github.com/zevarihq/ai-sdr-kit",
+  "homepage": "https://github.com/zevarihq/ai-sdr-kit",
   "keywords": ["ai-sdr","agent-harness","ai-agents","agent-skills","outbound","linkedin","linkedin-automation","mcp","claude-code","codex","openclaw","hermes-agent","sales-automation","cold-email"],
   "skills": "./skills/",
   "mcpServers": "./.mcp.json"
