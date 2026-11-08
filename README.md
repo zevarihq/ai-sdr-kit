@@ -91,7 +91,7 @@ The [playbook](skills/outbound-sequence-playbook/SKILL.md) has every sequence st
 Yes. Install the Voice DNA skills (including Alex Hormozi, Josh Braun, Justin Welsh, Chris Walker and April Dunford; inspired by their public work, not affiliated with any of them):
 
 - Claude Code: `/plugin marketplace add jpeslar1/john-peslar-ai-skills`, then `/plugin install voice-dna@john-peslar-ai-skills`
-- Codex: `codex plugin marketplace add jpeslar1/john-peslar-ai-skills`, then `codex plugin install voice-dna@john-peslar-ai-skills`
+- Codex: `codex plugin marketplace add jpeslar1/john-peslar-ai-skills`, then `codex plugin add voice-dna@john-peslar-ai-skills`
 
 Inside Zevari, your agent can also list voices with `skills_list` and apply one to a campaign.
 
