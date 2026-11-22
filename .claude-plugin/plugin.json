@@ -1,7 +1,7 @@
 {
   "name": "ai-sdr-kit",
-  "version": "1.0.0",
-  "description": "Open-source AI SDR harness: give OpenClaw, Hermes, a Grok bot, Claude Code or Codex a full outbound playbook for LinkedIn and email, run through Zevari.",
+  "version": "1.1.0",
+  "description": "The SDR harness for your AI: Zevari's AI Sales Director, outbound playbooks, automations and the LinkedIn and email sending engine, for Claude Code, Codex, OpenClaw, Hermes or a Grok bot.",
   "author": {
     "name": "Zevari",
     "url": "https://zevari.ai/?utm_source=github-kit"
