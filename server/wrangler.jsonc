@@ -1,0 +1,12 @@
+{
+  "name": "ai-sdr-kit",
+  "main": "src/index.ts",
+  "compatibility_date": "2025-04-01",
+  "workers_dev": false,
+  "routes": [{ "pattern": "kit.zevari.ai", "custom_domain": true }],
+  // Signed-in calls go to Zevari's MCP server over a service binding, so they
+  // keep the kit address the sign-in was issued for.
+  "services": [{ "binding": "ZEVARI", "service": "zevari-mcp" }],
+  // One row per call through the kit: method, tool, free or signed in, the AI app, outcome.
+  "analytics_engine_datasets": [{ "binding": "KIT_CALLS", "dataset": "ai_sdr_kit_calls" }]
+}
