@@ -34,6 +34,13 @@ const FREE_TOOLS = [
   },
 ];
 
+const DIRECTOR = {
+  name: "sales_director_get",
+  description: "The AI Sales Director: what to run next across your outbound, with plays you approve. Needs a Zevari account.",
+  inputSchema: { type: "object", properties: {} },
+  annotations: { readOnlyHint: true },
+};
+
 const INSTRUCTIONS =
   "AI SDR Kit by Zevari, the SDR harness for your AI. Your AI is the brain; Zevari teaches it how to run outbound. " +
   "Free without an account: `get_outbound_sop` (the operating procedure) and `get_sequence_playbook` (lead routing and every sequence). " +
@@ -128,8 +135,12 @@ async function zevariTools(): Promise<object[]> {
   try {
     const res = await fetch(`${ZEVARI_MCP}/.well-known/mcp/server-card.json`, { cf: { cacheTtl: 3600 } } as RequestInit);
     if (!res.ok) return [];
-    const card = (await res.json()) as { tools?: object[] };
-    return card.tools ?? [];
+    const card = (await res.json()) as { tools?: { name?: string }[] };
+    const tools = card.tools ?? [];
+    // The public card leaves out the Director (it ships with Automations), so
+    // name it here: asking for it should reach the "sign in" reply.
+    if (!tools.some((t) => t.name === "sales_director_get")) tools.unshift(DIRECTOR);
+    return tools;
   } catch {
     return [];
   }
