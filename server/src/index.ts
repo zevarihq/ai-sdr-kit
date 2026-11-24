@@ -1,16 +1,14 @@
-// AI SDR Kit MCP server.
+// AI SDR Kit MCP server. No account needed.
 //
-// No sign-in needed: it answers initialize, tools/list and the two free tools
-// (the outbound SOP and the sequence playbook) itself. Calling any other tool
-// without sign-in returns 401, which starts the normal Zevari sign-in. Once
-// signed in, every request goes to Zevari unchanged.
+// It answers initialize, tools/list and the two free tools (the outbound SOP
+// and the sequence playbook) itself. The list also shows Zevari's tools; calling
+// one replies with how to add Zevari (mcp.zevari.ai/mcp) and sign in there.
+// /free is kept as an alias of /mcp.
 //
-// Every call is counted (method, tool, signed in or not, the AI app, outcome)
-// so kit traffic is visible on its own. Tokens and tool arguments are never
-// recorded.
+// Every call is counted (method, tool, the AI app, outcome) so kit traffic is
+// visible on its own. Tool arguments are never recorded.
 
 interface Env {
-  ZEVARI: { fetch(request: Request): Promise<Response> };
   KIT_CALLS?: { writeDataPoint(point: { blobs?: string[]; doubles?: number[]; indexes?: string[] }): void };
 }
 
@@ -39,34 +37,23 @@ const FREE_TOOLS = [
 const INSTRUCTIONS =
   "AI SDR Kit by Zevari, the SDR harness for your AI. Your AI is the brain; Zevari teaches it how to run outbound. " +
   "Free without an account: `get_outbound_sop` (the operating procedure) and `get_sequence_playbook` (lead routing and every sequence). " +
-  "The other tools (the AI Sales Director, automations, LinkedIn and email sending) need a Zevari account: calling one starts sign-in.";
+  "The other tools (the AI Sales Director, automations, LinkedIn and email sending) need a Zevari account: add https://mcp.zevari.ai/mcp as a connector and sign in.";
 
 export default {
   async fetch(request: Request, env: Env, ctx: { waitUntil(p: Promise<unknown>): void }): Promise<Response> {
     const url = new URL(request.url);
     const path = url.pathname.replace(/\/+$/, "") || "/";
 
-    if (path.startsWith("/.well-known/oauth-protected-resource")) return json(resourceMetadata(url));
-    if (path === "/.well-known/oauth-authorization-server" || path === "/.well-known/openid-configuration") {
-      return fetch(`${ZEVARI_MCP}${path}`);
-    }
-    if (path !== "/mcp") {
+    if (path !== "/mcp" && path !== "/free") {
       return path === "/" ? Response.redirect("https://github.com/zevarihq/ai-sdr-kit", 302) : new Response("Not found", { status: 404 });
     }
 
-    const signedIn = request.headers.has("authorization");
     const calls = request.method === "POST" ? await readRpc(request) : [];
     const track = (outcome: string, status: number) => {
       for (const call of calls.length ? calls : [{ method: request.method } as Rpc]) {
-        record(env, request, call, signedIn, outcome, status);
+        record(env, request, call, outcome, status);
       }
     };
-
-    if (signedIn) {
-      const response = await env.ZEVARI.fetch(request);
-      track("forwarded", response.status);
-      return response;
-    }
 
     if (request.method !== "POST") {
       track("method_not_allowed", 405);
@@ -77,27 +64,21 @@ export default {
       return json(rpcError(null, -32700, "Parse error"), 400);
     }
 
-    if (calls.some((c) => c.method === "tools/call" && !FREE_TOOLS.some((t) => t.name === c.params?.name))) {
-      track("sign_in_required", 401);
-      return new Response(JSON.stringify(rpcError(null, -32001, "Sign in to Zevari to use this tool.")), {
-        status: 401,
-        headers: {
-          "content-type": "application/json",
-          "www-authenticate": `Bearer resource_metadata="${url.origin}/.well-known/oauth-protected-resource/mcp"`,
-        },
-      });
-    }
-
     const replies = [];
     for (const call of calls) {
       const reply = await answer(call);
       if (reply) replies.push(reply);
     }
-    track("answered", replies.length ? 200 : 202);
+    const needsAccount = calls.some((c) => c.method === "tools/call" && !isFree(c.params?.name));
+    track(needsAccount ? "needs_account" : "answered", replies.length ? 200 : 202);
     if (!replies.length) return new Response(null, { status: 202 });
     return json(replies.length > 1 ? replies : replies[0]);
   },
 };
+
+function isFree(name: unknown) {
+  return FREE_TOOLS.some((t) => t.name === name);
+}
 
 async function answer(call: Rpc): Promise<object | null> {
   if (call.id === undefined || call.id === null) return null; // notification
@@ -116,7 +97,13 @@ async function answer(call: Rpc): Promise<object | null> {
     case "tools/list":
       return rpcResult(call.id, { tools: [...FREE_TOOLS.map(freeToolDef), ...(await zevariTools())] });
     case "tools/call": {
-      const tool = FREE_TOOLS.find((t) => t.name === call.params?.name)!;
+      const tool = FREE_TOOLS.find((t) => t.name === call.params?.name);
+      if (!tool) {
+        return rpcResult(call.id, {
+          isError: true,
+          content: [{ type: "text", text: "This tool needs a Zevari account. Add https://mcp.zevari.ai/mcp as a connector (or MCP server) and sign in, then call it there." }],
+        });
+      }
       const res = await fetch(`${GUIDES}/${tool.file}`, { cf: { cacheTtl: 3600 } } as RequestInit);
       if (!res.ok) return rpcResult(call.id, { isError: true, content: [{ type: "text", text: "The guide is unavailable right now. Try again shortly." }] });
       return rpcResult(call.id, { content: [{ type: "text", text: await res.text() }] });
@@ -148,15 +135,6 @@ async function zevariTools(): Promise<object[]> {
   }
 }
 
-function resourceMetadata(url: URL) {
-  return {
-    resource: `${url.origin}/mcp`,
-    authorization_servers: [ZEVARI_MCP],
-    bearer_methods_supported: ["header"],
-    resource_name: "AI SDR Kit by Zevari",
-  };
-}
-
 async function readRpc(request: Request): Promise<Rpc[]> {
   try {
     const body = await request.clone().json();
@@ -167,7 +145,7 @@ async function readRpc(request: Request): Promise<Rpc[]> {
   }
 }
 
-function record(env: Env, request: Request, call: Rpc, signedIn: boolean, outcome: string, status: number) {
+function record(env: Env, request: Request, call: Rpc, outcome: string, status: number) {
   const client = call.method === "initialize" ? call.params?.clientInfo ?? {} : {};
   const tool = call.method === "tools/call" ? String(call.params?.name ?? "") : "";
   try {
@@ -176,7 +154,7 @@ function record(env: Env, request: Request, call: Rpc, signedIn: boolean, outcom
       blobs: [
         String(call.method ?? ""),
         tool,
-        signedIn ? "signed_in" : "free",
+        "free",
         String(client.name ?? "").slice(0, 100),
         String(client.version ?? "").slice(0, 50),
         outcome,
