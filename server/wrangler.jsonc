@@ -1,0 +1,9 @@
+{
+  "name": "ai-sdr-kit",
+  "main": "src/index.ts",
+  "compatibility_date": "2025-04-01",
+  "workers_dev": false,
+  "routes": [{ "pattern": "kit.zevari.ai", "custom_domain": true }],
+  // One row per call through the kit: method, tool, the AI app, outcome.
+  "analytics_engine_datasets": [{ "binding": "KIT_CALLS", "dataset": "ai_sdr_kit_calls" }]
+}
